@@ -24,7 +24,9 @@ for (let idx=0; idx < json.length; idx++) {
     values.push({
       Time: dt, 
       Sys: Number(json[idx].SYS), 
+      SysColor: sysColor(json[idx].SYS),
       Dia: Number(json[idx].DIA), 
+      DiaColor: diaColor(json[idx].DIA),
       Puls: Number(json[idx].BPM)})
 }
 
@@ -65,3 +67,23 @@ app.get('/', (req, res) => res.render('table', {
 }));
 
 app.listen(8000, () => console.log('Test running'))
+
+function sysColor(num) {
+  if (num < 130) {
+    return 'green'
+  } else if (num < 140) {
+    return 'orange'
+  } else {
+    return 'red'
+  }
+}
+
+function diaColor(num) {
+  if (num < 85) {
+    return 'green'
+  } else if (num < 90) {
+    return 'orange'
+  } else {
+    return 'red'
+  }
+}
