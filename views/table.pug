@@ -12,8 +12,8 @@ block table
         each day in days
           tr
             td #{day.Time}
-            td #{day.Sys}
-            td #{day.Dia}
+            td(style={color: day.SysColor}) #{day.Sys}
+            td(style={color: day.DiaColor}) #{day.Dia}
             td #{day.Puls}
     tfoot
       tr
