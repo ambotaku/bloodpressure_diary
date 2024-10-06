@@ -1,10 +1,11 @@
-extends layout.pug
+extends layout_1.pug
 
-block table
+block table_1
   table.minimalistBlack
     thead
       tr
         th Datum
+        th Uhrzeit
         th Systolisch
         th Diastolisch
         th Puls
@@ -12,6 +13,7 @@ block table
     tbody
         each day in days
           tr
+            td #{day.Date}
             td #{day.Time}
             td 
               span.bold #{day.Sys}

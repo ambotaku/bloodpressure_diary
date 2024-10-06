@@ -1,0 +1,38 @@
+extends layout_2.pug
+
+block table_2
+  table.minimalistBlack
+    thead
+      tr
+        th Datum
+        th Systolisch
+        th Diastolisch
+        th Puls
+        th Anmerkung
+    tbody
+        each day in days
+          tr
+            td #{day.Date}
+            td 
+              span.bold #{day.Sys}
+            td 
+              span.bold #{day.Dia}
+            td 
+              span.bold #{day.Puls}
+            td #{day.Remark}
+    tfoot
+      tr
+        td Minimum 
+        td #{minSys} 
+        td #{minDia} 
+        td #{minPuls} 
+      tr 
+        td Maximum 
+        td #{maxSys} 
+        td #{maxDia} 
+        td #{maxPuls} 
+      tr 
+        td Mittelwert
+        td #{avgSys} 
+        td #{avgDia} 
+        td #{avgPuls}   

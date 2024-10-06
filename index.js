@@ -3,35 +3,71 @@ const pug = require("pug")
 const path = require('path')
 const csvToJson = require('convert-csv-to-json')
 
+file = './bloodPressure.csv';
+device = 1;
+
+if (process.argv.length != 4) {
+  console.error('call: node datafile.cvs [-o|-w]\n-o Omron CSV file\n-w Withings CSV file\n');
+  process.exit(1);
+} else {
+  file = process.argv[2];
+
+  switch (process.argv[2][1]) {
+    case 'w':
+      device = 2;
+    default:
+      device = 1;
+  }
+  console.log("parsing file %s from %d", file, device);
+}
+
 const app = express();
 
 let json = csvToJson.fieldDelimiter(';').parseSubArray('*',',')
-  .getJsonFromCsv(path.join(__dirname, './data/bloodPressure.csv'));
+  .getJsonFromCsv(path.join(__dirname, file));
 
 let timestamps = new Set()
 let values = [];
 
+let firstDate= ''
+let lastDate= ''
 
-const firstDate = new Date(json[0].Date).toLocaleDateString();
-const lastDate = new Date(json[json.length-1].Date).toLocaleDateString();
 
 for (let idx=0; idx < json.length; idx++) {
-    
-    const dt = new Date(json[idx].Date).toLocaleString();
-    if (timestamps.has(dt)) continue
+    switch(device) {
+      case 2:
+        firstDate = new Date(json[0].Date).toLocaleDateString();
+        lastDate = new Date(json[json.length-1].Date).toLocaleDateString();
+                const dt = new Date(json[idx].Date).toLocaleString();
+        timestamps.add(dt)
 
-    timestamps.add(dt)
+        if (timestamps.has(dt)) continue
+          values.push({
+          Date: dt, 
+          Sys: Number(json[idx].SYS), 
+          SysFont: sysFontWeight(json[idx].SYS),
+          Dia: Number(json[idx].DIA), 
+          DiaFont: diaFontWeight(json[idx].DIA),
+          Puls: Number(json[idx].BPM),
+          Remark: json[idx].REM
+        })
+        break;
+      default:
+        firstDate = json[json.length-1].Date
+        lastDate = json[0].Date
 
-    values.push({
-      Time: dt, 
-      Sys: Number(json[idx].SYS), 
-      SysFont: sysFontWeight(json[idx].SYS),
-      Dia: Number(json[idx].DIA), 
-      DiaFont: diaFontWeight(json[idx].DIA),
-      Puls: Number(json[idx].BPM),
-      Remark: json[idx].REM
-
-    })
+        values.push({
+          Date: json[idx].Date,
+          Time: json[idx].Time, 
+          Sys: Number(json[idx].SYS), 
+          SysFont: sysFontWeight(json[idx].SYS),
+          Dia: Number(json[idx].DIA), 
+          DiaFont: diaFontWeight(json[idx].DIA),
+          Puls: Number(json[idx].BPM),
+          Remark: json[idx].REM
+        })
+        break;
+    }
 }
 
 let sumSys = 0, sumDia = 0, sumPuls = 0
@@ -63,7 +99,7 @@ app.set(path.join(__dirname, './views'))
 app.set('view engine', 'pug')
 app.use(express.static(__dirname));
 
-app.get('/', (req, res) => res.render('table', { 
+app.get('/', (req, res) => res.render('table_'+device.toString(), { 
     title: 'Bloodpressure Diary', days: values, 
     firstDate: firstDate, lastDate: lastDate,
     minSys: minSys, maxSys: maxSys, avgSys: avgSys,
