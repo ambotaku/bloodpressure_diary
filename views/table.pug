@@ -8,13 +8,18 @@ block table
         th Systolisch
         th Diastolisch
         th Puls
+        th Anmerkung
     tbody
         each day in days
           tr
             td #{day.Time}
-            td(style={color: day.SysColor}) #{day.Sys}
-            td(style={color: day.DiaColor}) #{day.Dia}
-            td #{day.Puls}
+            td 
+              span.bold #{day.Sys}
+            td 
+              span.bold #{day.Dia}
+            td 
+              span.bold #{day.Puls}
+            td #{day.Remark}
     tfoot
       tr
         td Minimum 
